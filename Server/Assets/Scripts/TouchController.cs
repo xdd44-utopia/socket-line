@@ -8,7 +8,7 @@ public class TouchController : MonoBehaviour
 	private Vector3 posOpposite = new Vector3(0, 0, 0);
 	private Vector3 posSelf = new Vector3(0, 0, 0);
 	private float delayTimer = 0;
-	private float delayTolerance = 0.5f;
+	private float delayTolerance = 2f;
 	private SpriteRenderer spriteRenderer;
 	private LineRenderer lineRenderer;
 	// Start is called before the first frame update
@@ -16,6 +16,7 @@ public class TouchController : MonoBehaviour
 		spriteRenderer = GetComponent<SpriteRenderer>();
 		spriteRenderer.enabled = false;
 		lineRenderer = this.gameObject.AddComponent<LineRenderer>();
+		lineRenderer.alignment = LineAlignment.TransformZ;
 		lineRenderer.SetWidth(0.1f, 0.1f);
 		lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
 		lineRenderer.positionCount = 2;
@@ -26,6 +27,7 @@ public class TouchController : MonoBehaviour
 	// Update is called once per frame
 	void Update() {
 		delayTimer -= delayTolerance * Time.deltaTime;
+		Debug.Log(delayTimer);
 		updatePoint();
 		updateLine();
 	}
