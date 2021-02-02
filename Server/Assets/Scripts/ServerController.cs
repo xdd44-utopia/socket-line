@@ -1,52 +1,61 @@
 ﻿using System;
-using System.Collections; 
-using System.Collections.Generic; 
-using System.Net; 
-using System.Net.Sockets; 
-using System.Text; 
-using System.Threading; 
-using UnityEngine;  
+using System.Collections;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading;
+using UnityEngine;
+using UnityEngine.UI;
 
-public class ServerController : MonoBehaviour {  	
+public class ServerController : MonoBehaviour {
+
+	public Text ipText;
+	public SpriteRenderer sr;
+	public GameObject touchPoint;
+
+	private Color disconnectColor = new Color(0.8156f, 0.3529f, 0.4313f);
+	private Color connectColor = new Color(0.5254f, 0.7568f, 0.4f);
+
+	private Vector3 posOpposite = new Vector3(0, 0, 0);
+	private bool isRefreshed = false;
 
 	private TcpListener tcpListener;
 	private Thread tcpListenerThread;
 	private TcpClient connectedTcpClient;
-		
-	// Use this for initialization
+	
 	void Start () {
-		// Start TcpServer background thread
 		tcpListenerThread = new Thread (new ThreadStart(ListenForIncommingRequests));
 		tcpListenerThread.IsBackground = true;
 		tcpListenerThread.Start();
 	}
 	
-	// Update is called once per frame
 	void Update () {
-		if (Input.GetKeyDown(KeyCode.Space)) {
-			SendMessage();
+		ipText.text = getIPAddress();
+		sr.color = (connectedTcpClient == null ? disconnectColor : connectColor);
+		if (isRefreshed) {
+			touchPoint.GetComponent<TouchController>().receivePos(posOpposite);
+			isRefreshed = false;
 		}
 	}
 	
 	private void ListenForIncommingRequests () {
 		try {
-			// Create listener on localhost port 8052.
-			tcpListener = new TcpListener(IPAddress.Parse("127.0.0.1"), 8052);
+			tcpListener = new TcpListener(IPAddress.Any, 8052);
 			tcpListener.Start();
 			Debug.Log("Server is listening");
 			Byte[] bytes = new Byte[1024];
 			while (true) {
 				using (connectedTcpClient = tcpListener.AcceptTcpClient()) {
-					// Get a stream object for reading
 					using (NetworkStream stream = connectedTcpClient.GetStream()) {
 						int length;
-						// Read incomming stream into byte arrary.
 						while ((length = stream.Read(bytes, 0, bytes.Length)) != 0) {
 							var incommingData = new byte[length];
 							Array.Copy(bytes, 0, incommingData, 0, length);
-							// Convert byte array to string message.
 							string clientMessage = Encoding.ASCII.GetString(incommingData);
-							Debug.Log("client message received as: " + clientMessage);
+							posOpposite = getVector(clientMessage);
+							isRefreshed = true;
 						}
 					}
 				}
@@ -57,7 +66,7 @@ public class ServerController : MonoBehaviour {
 		}
 	}
 	
-	private void SendMessage() {
+	public void sendMessage(Vector3 pos) {
 		if (connectedTcpClient == null) {
 			return;
 		}
@@ -65,10 +74,8 @@ public class ServerController : MonoBehaviour {
 		try {			
 			NetworkStream stream = connectedTcpClient.GetStream();
 			if (stream.CanWrite) {
-				string serverMessage = "This is a message from your server.";
-				// Convert string message to byte array.
+				string serverMessage = pos.x + "," + pos.y + ",";
 				byte[] serverMessageAsByteArray = Encoding.ASCII.GetBytes(serverMessage);
-				// Write byte array to socketConnection stream.
 				stream.Write(serverMessageAsByteArray, 0, serverMessageAsByteArray.Length);
 				Debug.Log("Server sent his message - should be received by client");
 			}
@@ -77,4 +84,24 @@ public class ServerController : MonoBehaviour {
 			Debug.Log("Socket exception: " + socketException);
 		}
 	}
+	
+	private string getIPAddress() {
+		var host = Dns.GetHostEntry(Dns.GetHostName());
+		foreach (var ip in host.AddressList) {
+			if (ip.AddressFamily == AddressFamily.InterNetwork)
+			{
+				return ip.ToString();
+			}
+		}
+		throw new System.Exception("No network adapters with an IPv4 address in the system!");
+	}
+
+	private Vector3 getVector(string str) {
+		string[] temp = str.Split(',');
+		float x = System.Convert.ToSingle(temp[0]);
+		float y = System.Convert.ToSingle(temp[1]);
+		Vector3 v = new Vector3(x, y, 0);
+		return v;
+	}
+
 }
