@@ -9,7 +9,6 @@ using UnityEngine;
 
 public class ClientController : MonoBehaviour {
 
-	public SpriteRenderer sr;
 	public GameObject touchPoint;
 
 	private Color disconnectColor = new Color(0.8156f, 0.3529f, 0.4313f);
@@ -23,11 +22,11 @@ public class ClientController : MonoBehaviour {
 	
 	void Start () {
 		socketConnection = null;
-		ConnectToTcpServer("127.0.0.1");
+		ConnectToTcpServer("1.1.1.1");
 	}
 	
 	void Update () {
-		sr.color = (socketConnection == null ? disconnectColor : connectColor);
+		Camera.main.backgroundColor = (socketConnection == null ? disconnectColor : connectColor);
 		if (isRefreshed) {
 			touchPoint.GetComponent<TouchController>().receivePos(posOpposite);
 			isRefreshed = false;
@@ -68,7 +67,7 @@ public class ClientController : MonoBehaviour {
 		}
 	}
 	
-	public void sendMessage(Vector3 pos) {
+	public void sendMessage(Vector2 pos) {
 		if (socketConnection == null) {
 			return;
 		}
@@ -86,11 +85,11 @@ public class ClientController : MonoBehaviour {
 		}
 	}
 
-	private Vector3 getVector(string str) {
+	private Vector2 getVector(string str) {
 		string[] temp = str.Split(',');
 		float x = System.Convert.ToSingle(temp[0]);
 		float y = System.Convert.ToSingle(temp[1]);
-		Vector3 v = new Vector3(x, y, 0);
+		Vector2 v = new Vector2(x, y);
 		return v;
 	}
 }

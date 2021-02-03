@@ -12,7 +12,6 @@ using UnityEngine.UI;
 public class ServerController : MonoBehaviour {
 
 	public Text ipText;
-	public SpriteRenderer sr;
 	public GameObject touchPoint;
 
 	private Color disconnectColor = new Color(0.8156f, 0.3529f, 0.4313f);
@@ -33,7 +32,7 @@ public class ServerController : MonoBehaviour {
 	
 	void Update () {
 		ipText.text = getIPAddress();
-		sr.color = (connectedTcpClient == null ? disconnectColor : connectColor);
+		Camera.main.backgroundColor = (connectedTcpClient == null ? disconnectColor : connectColor);
 		if (isRefreshed) {
 			touchPoint.GetComponent<TouchController>().receivePos(posOpposite);
 			isRefreshed = false;
@@ -66,7 +65,7 @@ public class ServerController : MonoBehaviour {
 		}
 	}
 	
-	public void sendMessage(Vector3 pos) {
+	public void sendMessage(Vector2 pos) {
 		if (connectedTcpClient == null) {
 			return;
 		}
@@ -96,11 +95,11 @@ public class ServerController : MonoBehaviour {
 		throw new System.Exception("No network adapters with an IPv4 address in the system!");
 	}
 
-	private Vector3 getVector(string str) {
+	private Vector2 getVector(string str) {
 		string[] temp = str.Split(',');
 		float x = System.Convert.ToSingle(temp[0]);
 		float y = System.Convert.ToSingle(temp[1]);
-		Vector3 v = new Vector3(x, y, 0);
+		Vector2 v = new Vector3(x, y);
 		return v;
 	}
 
