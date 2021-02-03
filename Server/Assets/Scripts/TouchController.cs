@@ -1,12 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TouchController : MonoBehaviour
 {
 	public GameObject sender;
 	public GameObject otherPoint;
 	public LineRenderer otherFrame;
+	public Text text;
+	private bool useFaceTrack = false;
 
 	private bool increaseX = false;
 	private bool decreaseX = false;
@@ -18,11 +21,13 @@ public class TouchController : MonoBehaviour
 	private Vector3 posOpposite = new Vector3(0, 0, 0);
 	private Vector3 posSelf = new Vector3(0, 0, 0);
 	private float delayTimer = 0;
-	private float delayTolerance = 0;
+	private float delayTolerance = 25f;
 	private MeshRenderer meshRenderer;
 	private LineRenderer lineRenderer;
 
-	private Vector3 observe = new Vector3(0, 0, -10f);
+	private Vector3 observe = new Vector3(0, 0, -200f);
+	private Vector3 defaultObserve = new Vector3(0, 0, -200f);
+	private float observationScale = 150f;
 	private float observeMoveSensitive = 0.025f;
 	private float lineWidth = 0.25f;
 	
@@ -51,12 +56,44 @@ public class TouchController : MonoBehaviour
 	}
 
 	void updateObservation() {
-		if (increaseX) { observe.x += observeMoveSensitive; }
-		if (decreaseX) { observe.x -= observeMoveSensitive; }
-		if (increaseY) { observe.y += observeMoveSensitive; }
-		if (decreaseY) { observe.y -= observeMoveSensitive; }
-		if (increaseZ) { observe.z += observeMoveSensitive; }
-		if (decreaseZ) { observe.z -= observeMoveSensitive; }
+		if (useFaceTrack) {
+			GameObject[] objects = GameObject.FindGameObjectsWithTag("Player");
+			GameObject testObj = new GameObject();
+			Instantiate(testObj, objects[0].transform.position, Quaternion.identity);
+			testObj.transform.position = objects[0].transform.position;
+			objects = GameObject.FindGameObjectsWithTag("FacePosition");
+			testObj.transform.RotateAround(
+				new Vector3(0f, 0f, 0f),
+				new Vector3(0f, 1f, 0f),
+				-objects[0].transform.rotation.eulerAngles.y
+			);
+			testObj.transform.RotateAround(
+				new Vector3(0f, 0f, 0f),
+				new Vector3(1f, 0f, 0f),
+				-objects[0].transform.rotation.eulerAngles.x
+			);
+			testObj.transform.RotateAround(
+				new Vector3(0f, 0f, 0f),
+				new Vector3(0f, 0f, 1f),
+				-objects[0].transform.rotation.eulerAngles.z
+			);
+			observe = new Vector3(
+				testObj.transform.position.x,
+				testObj.transform.position.y,
+				-testObj.transform.position.z
+			) * observationScale;
+			text.text = "Face pos: " + observe;
+			Destroy(testObj, 0f);
+		}
+		else {
+			if (increaseX) { observe.x += observeMoveSensitive; }
+			if (decreaseX) { observe.x -= observeMoveSensitive; }
+			if (increaseY) { observe.y += observeMoveSensitive; }
+			if (decreaseY) { observe.y -= observeMoveSensitive; }
+			if (increaseZ) { observe.z += observeMoveSensitive; }
+			if (decreaseZ) { observe.z -= observeMoveSensitive; }
+			text.text = "Manual mode";
+		}
 	}
 
 	void updatePoint() {
@@ -134,5 +171,14 @@ public class TouchController : MonoBehaviour
 	public void stopIncreaseZ() { increaseZ = false; }
 	public void startDecreaseZ() { decreaseZ = true; }
 	public void stopDecreaseZ() { decreaseZ = false; }
+
+	public void switchObservationMode() {
+		if (useFaceTrack) {
+			useFaceTrack = false;
+			observe = defaultObserve;
+		} else {
+			useFaceTrack = true;
+		}
+	}
 
 }

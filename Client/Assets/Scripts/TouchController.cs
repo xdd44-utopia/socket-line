@@ -18,11 +18,11 @@ public class TouchController : MonoBehaviour
 	private Vector3 posOpposite = new Vector3(0, 0, 0);
 	private Vector3 posSelf = new Vector3(0, 0, 0);
 	private float delayTimer = 0;
-	private float delayTolerance = 0;
+	private float delayTolerance = 25f;
 	private MeshRenderer meshRenderer;
 	private LineRenderer lineRenderer;
 
-	private Vector3 observe = new Vector3(0, 0, -10f);
+	private Vector3 observe = new Vector3(0, 0, -150f);
 	private float observeMoveSensitive = 0.025f;
 	private float lineWidth = 0.25f;
 	
