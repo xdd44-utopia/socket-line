@@ -12,12 +12,13 @@ using UnityEngine.UI;
 public class ServerController : MonoBehaviour {
 
 	public Text ipText;
-	public GameObject touchPoint;
+	public GameObject obj;
+	public Camera renderCamera;
 
 	private Color disconnectColor = new Color(0.8156f, 0.3529f, 0.4313f);
 	private Color connectColor = new Color(0.5254f, 0.7568f, 0.4f);
 
-	private Vector3 posOpposite = new Vector3(0, 0, 0);
+	private Vector3 pos = new Vector3(0, 0, 0);
 	private bool isRefreshed = false;
 
 	private TcpListener tcpListener;
@@ -32,9 +33,9 @@ public class ServerController : MonoBehaviour {
 	
 	void Update () {
 		ipText.text = getIPAddress();
-		Camera.main.backgroundColor = (connectedTcpClient == null ? disconnectColor : connectColor);
+		renderCamera.backgroundColor = (connectedTcpClient == null ? disconnectColor : connectColor);
 		if (isRefreshed) {
-			touchPoint.GetComponent<TouchController>().receivePos(posOpposite);
+			obj.GetComponent<ModelController>().receivePos(pos);
 			isRefreshed = false;
 		}
 	}
@@ -53,7 +54,7 @@ public class ServerController : MonoBehaviour {
 							var incommingData = new byte[length];
 							Array.Copy(bytes, 0, incommingData, 0, length);
 							string clientMessage = Encoding.ASCII.GetString(incommingData);
-							posOpposite = getVector(clientMessage);
+							pos = getVector(clientMessage);
 							isRefreshed = true;
 						}
 					}
@@ -65,7 +66,7 @@ public class ServerController : MonoBehaviour {
 		}
 	}
 	
-	public void sendMessage(Vector2 pos) {
+	public void sendMessage(Vector3 pos) {
 		if (connectedTcpClient == null) {
 			return;
 		}
@@ -95,11 +96,12 @@ public class ServerController : MonoBehaviour {
 		throw new System.Exception("No network adapters with an IPv4 address in the system!");
 	}
 
-	private Vector2 getVector(string str) {
+	private Vector3 getVector(string str) {
 		string[] temp = str.Split(',');
 		float x = System.Convert.ToSingle(temp[0]);
 		float y = System.Convert.ToSingle(temp[1]);
-		Vector2 v = new Vector3(x, y);
+		float z = System.Convert.ToSingle(temp[2]);
+		Vector3 v = new Vector3(x, y, z);
 		return v;
 	}
 
