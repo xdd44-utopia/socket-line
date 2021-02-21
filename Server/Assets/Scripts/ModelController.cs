@@ -19,18 +19,18 @@ public class ModelController : MonoBehaviour
 	public bool decreaseY = false;
 	public bool increaseZ = false;
 	public bool decreaseZ = false;
-	private Vector3 pos = new Vector3(0, 0, 0.6f);
+	private Vector3 pos = new Vector3(0, 0, 0);
 	private Vector3 prevTouch;
-	private float moveSensitive = 0.1f;
+	private float moveSensitive = 0.01f;
 
 	private Vector3 observe = new Vector3(0, 0, -5f);
 	private Vector3 defaultObserve = new Vector3(0, 0, -5f);
-	private float correction = 7.5f;
+	private float correction = 2.5f;
 	private float smoothSpeed = 5f;
 	private float smoothTolerance = 1f;
-	private float observationScalePlaner = 100f;
+	private float observationScalePlaner = 50f;
 	private float observationScaleVertical = 100f;
-	private float observeMoveSensitive = 0.25f;
+	private float observeMoveSensitive = 0.05f;
 	
 	void Start() {
 		Camera cam = Camera.main;
@@ -88,6 +88,7 @@ public class ModelController : MonoBehaviour
 		}
 		if (Vector3.Distance(renderCam.transform.position, observe) > smoothTolerance) {
 			renderCam.transform.position = Vector3.Lerp(renderCam.transform.position, observe, smoothSpeed * Time.deltaTime);
+			sender.GetComponent<ServerController>().sendMessage();
 		}
 		text.text = "Face pos: " + renderCam.transform.position;
 	}
@@ -99,9 +100,6 @@ public class ModelController : MonoBehaviour
 		fovHorizontal = Camera.HorizontalToVerticalFieldOfView(fovHorizontal, cam.aspect);
 		float fovVertical = Mathf.Atan(-(Mathf.Abs(renderCam.transform.position.y) + camHeight / 2) / renderCam.transform.position.z) * 2;
 		fovVertical = fovVertical * 180 / Mathf.PI;
-
-		Debug.Log(fovHorizontal + " " + fovVertical);
-
 		cam.fieldOfView = (fovVertical > fovHorizontal ? fovVertical : fovHorizontal);
 	}
 
@@ -109,30 +107,28 @@ public class ModelController : MonoBehaviour
 		if (Input.touchCount > 0) {
 			Touch touch = Input.GetTouch(0);
 			if (touch.position.y < 850f && touch.position.y > 300f) {
-				Vector2 tp = Camera.main.ScreenToWorldPoint(new Vector3(touch.position.x, touch.position.y, -100f));
+				Vector2 tp = new Vector2(touch.position.x, touch.position.y);
 				switch (touch.phase) {
 					case TouchPhase.Began:
 						prevTouch = tp;
 						break;
 					case TouchPhase.Moved:
-						pos.x -= moveSensitive * (tp.x - prevTouch.x);
-						pos.y -= moveSensitive * (tp.y - prevTouch.y);
+						pos += moveSensitive * (new Vector3(tp.x, tp.y, 0) - new Vector3(prevTouch.x, prevTouch.y, 0));
 						prevTouch = tp;
-						sender.GetComponent<ServerController>().sendMessage(pos);
+						sender.GetComponent<ServerController>().sendMessage();
 						break;
 				}
 			}
 		}
 		if (Input.GetMouseButtonDown(0) && Input.mousePosition.y < 2500f && Input.mousePosition.y > 300f) {
-			Vector2 tp = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -100f));
+			Vector2 tp = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
 			prevTouch = tp;
 		}
 		else if (Input.GetMouseButton(0) && Input.mousePosition.y < 2500f && Input.mousePosition.y > 300f) {
-			Vector2 tp = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -100f));
-			pos.x -= moveSensitive * (tp.x - prevTouch.x);
-			pos.y -= moveSensitive * (tp.y - prevTouch.y);
+			Vector2 tp = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+			pos += moveSensitive * (new Vector3(tp.x, tp.y, 0) - new Vector3(prevTouch.x, prevTouch.y, 0));
 			prevTouch = tp;
-			sender.GetComponent<ServerController>().sendMessage(pos);
+			sender.GetComponent<ServerController>().sendMessage();
 		}
 		transform.position = pos;
 	}

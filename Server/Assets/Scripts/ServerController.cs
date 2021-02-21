@@ -12,11 +12,13 @@ using UnityEngine.UI;
 public class ServerController : MonoBehaviour {
 
 	public Text ipText;
+	public Text rcvText;
 	public GameObject obj;
 	public Camera renderCamera;
 
 	private Color disconnectColor = new Color(0.8156f, 0.3529f, 0.4313f);
-	private Color connectColor = new Color(0.5254f, 0.7568f, 0.4f);
+	//private Color connectColor = new Color(0.5254f, 0.7568f, 0.4f);
+	private Color connectColor = new Color(0f, 0f, 0f);
 
 	private Vector3 pos = new Vector3(0, 0, 0);
 	private bool isRefreshed = false;
@@ -24,6 +26,9 @@ public class ServerController : MonoBehaviour {
 	private TcpListener tcpListener;
 	private Thread tcpListenerThread;
 	private TcpClient connectedTcpClient;
+	private string rcvMsg = "";
+
+	private bool noConnection = true;
 	
 	void Start () {
 		tcpListenerThread = new Thread (new ThreadStart(ListenForIncommingRequests));
@@ -33,7 +38,12 @@ public class ServerController : MonoBehaviour {
 	
 	void Update () {
 		ipText.text = getIPAddress();
+		rcvText.text = rcvMsg;
 		renderCamera.backgroundColor = (connectedTcpClient == null ? disconnectColor : connectColor);
+		if (connectedTcpClient != null && noConnection) {
+			sendMessage();
+			noConnection = false;
+		}
 		if (isRefreshed) {
 			obj.GetComponent<ModelController>().receivePos(pos);
 			isRefreshed = false;
@@ -54,6 +64,7 @@ public class ServerController : MonoBehaviour {
 							var incommingData = new byte[length];
 							Array.Copy(bytes, 0, incommingData, 0, length);
 							string clientMessage = Encoding.ASCII.GetString(incommingData);
+							rcvMsg = clientMessage;
 							pos = getVector(clientMessage);
 							isRefreshed = true;
 						}
@@ -66,7 +77,7 @@ public class ServerController : MonoBehaviour {
 		}
 	}
 	
-	public void sendMessage(Vector3 pos) {
+	public void sendMessage() {
 		if (connectedTcpClient == null) {
 			return;
 		}
@@ -74,7 +85,7 @@ public class ServerController : MonoBehaviour {
 		try {			
 			NetworkStream stream = connectedTcpClient.GetStream();
 			if (stream.CanWrite) {
-				string serverMessage = pos.x + "," + pos.y + ",";
+				string serverMessage = obj.transform.position.x + "," + obj.transform.position.y + "," + obj.transform.position.z + "," + renderCamera.transform.position.x + "," + renderCamera.transform.position.y + "," + renderCamera.transform.position.z + ",";
 				byte[] serverMessageAsByteArray = Encoding.ASCII.GetBytes(serverMessage);
 				stream.Write(serverMessageAsByteArray, 0, serverMessageAsByteArray.Length);
 				Debug.Log("Server sent his message - should be received by client");

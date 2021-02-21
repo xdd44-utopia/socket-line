@@ -92,12 +92,12 @@ Material:
     - _retractBackfaces: 0
     m_Colors:
     - WaveSpeed: {r: 19, g: 9, b: -16, a: -7}
-    - _Color: {r: 0.7352941, g: 0.7352941, b: 0.7352941, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Emission: {r: 0, g: 0, b: 0, a: 0}
     - _HorizonColor: {r: 0.172, g: 0.463, b: 0.435, a: 1}
     - _ReflectColor: {r: 1, g: 0.6313726, b: 0.44313726, a: 0.6666667}
     - _RefrColor: {r: 0.34, g: 0.85, b: 0.92, a: 1}
-    - _SectionColor: {r: 1, g: 0.24056602, b: 0.24056602, a: 1}
+    - _SectionColor: {r: 0.241, g: 0.24056602, b: 0.24056602, a: 1}
     - _SectionPlane: {r: 0.707, g: 0, b: -0.2, a: 1}
     - _SectionPoint: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 0.92941177}

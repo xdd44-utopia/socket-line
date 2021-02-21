@@ -115,7 +115,7 @@ public class TouchController : MonoBehaviour
 		if (Physics.Raycast(ray, out hit)) {
 			transform.position = hit.point;
 		}
-		sender.GetComponent<ServerController>().sendMessage(new Vector2(transform.position.x, transform.position.y));
+		//sender.GetComponent<ServerController>().sendMessage(new Vector2(transform.position.x, transform.position.y));
 		meshRenderer.enabled = true;
 	}
 
