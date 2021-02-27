@@ -78,6 +78,10 @@
 				return color;
 			}
 
+			float3 TransformedPosition(float3 o) {
+				return float3(o.x, 1-o.z, -o.y);
+			}
+
 			fixed4 frag(v2f i) : SV_Target
 			{
 				// Start raymarching at the front surface of the object
@@ -96,7 +100,7 @@
 					// Accumulate color only within unit cube bounds
 					//if(max(abs(samplePosition.x), max(abs(samplePosition.y), abs(samplePosition.z))) < 0.5f + EPSILON)
 					//{
-						float4 sampledColor = tex3D(_MainTex, samplePosition + float3(0.5f, 0.5f, 0.5f));
+						float4 sampledColor = tex3D(_MainTex, TransformedPosition( samplePosition + float3(0.5f, 0.5f, 0.5f)));
 						//sampledColor.a *= _Alpha;
 						color = BlendUnder(color, sampledColor);
 						samplePosition += rayDirection * _StepSize;

@@ -1,3 +1,5 @@
-## Draw a line between devices
+## Unity project for a multi-devices interaction application
 
-By Unity
+Two Unity projects Server and Client
+
+One openFrameworks project for converting 3D texture
