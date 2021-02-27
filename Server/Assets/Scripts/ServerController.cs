@@ -93,6 +93,7 @@ public class ServerController : MonoBehaviour {
 		}
 		catch (SocketException socketException) {
 			Debug.Log("Socket exception: " + socketException);
+			connectedTcpClient = null;
 		}
 	}
 	

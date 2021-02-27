@@ -24,8 +24,7 @@ public class ClientController : MonoBehaviour {
 	private Thread clientReceiveThread;
 	
 	void Start () {
-		socketConnection = null;
-		//ConnectToTcpServer("1.1.1.1");
+		
 	}
 	
 	void Update () {
@@ -86,6 +85,7 @@ public class ClientController : MonoBehaviour {
 		}
 		catch (SocketException socketException) {
 			Debug.Log("Socket exception: " + socketException);
+			socketConnection = null;
 		}
 	}
 

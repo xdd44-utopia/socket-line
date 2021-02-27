@@ -7,19 +7,18 @@ public class ModelController : MonoBehaviour
 {
 	public GameObject sender;
 	public GameObject renderCam;
-	private bool useFaceTrack = false;
+
+	private string address = "10.150.153.190";
+	//Macbook local connecting to iPhone hotspot: 172.20.10.2
+	//Macbook local connecting to xdd44's wifi: 192.168.0.101
+	//iPhone connecting to iPhone hotspot: 10.150.153.190
 
 	private float camWidth;
 	private float camHeight;
 	private float angle = 2 * Mathf.PI / 3;
 
-	public bool increaseX = false;
-	public bool decreaseX = false;
-	public bool increaseY = false;
-	public bool decreaseY = false;
-	public bool increaseZ = false;
-	public bool decreaseZ = false;
 	private Vector3 pos = new Vector3(0, 0, 0.6f);
+	private Vector3 defaultPos = new Vector3(0, 0, 0.6f);
 	private Vector3 prevTouch;
 	private float moveSensitive = 0.01f;
 
@@ -46,46 +45,6 @@ public class ModelController : MonoBehaviour
 	}
 
 	void updateObservation() {
-		if (useFaceTrack) {
-			GameObject[] objects = GameObject.FindGameObjectsWithTag("Player");
-			GameObject testObj = new GameObject();
-			Instantiate(testObj, objects[0].transform.position, Quaternion.identity);
-			testObj.transform.position = objects[0].transform.position;
-			objects = GameObject.FindGameObjectsWithTag("FacePosition");
-			testObj.transform.RotateAround(
-				new Vector3(0f, 0f, 0f),
-				new Vector3(0f, 1f, 0f),
-				-objects[0].transform.rotation.eulerAngles.y
-			);
-			testObj.transform.RotateAround(
-				new Vector3(0f, 0f, 0f),
-				new Vector3(1f, 0f, 0f),
-				-objects[0].transform.rotation.eulerAngles.x
-			);
-			testObj.transform.RotateAround(
-				new Vector3(0f, 0f, 0f),
-				new Vector3(0f, 0f, 1f),
-				-objects[0].transform.rotation.eulerAngles.z
-			);
-			// observe = new Vector3(
-			// 	testObj.transform.position.x,
-			// 	testObj.transform.position.y,
-			// 	-testObj.transform.position.z
-			// );
-			// observe.x *= observationScalePlaner;
-			// observe.y *= observationScalePlaner;
-			// observe.y += correction;
-			// observe.z *= observationScaleVertical;
-			Destroy(testObj, 0f);
-		}
-		else {
-			if (increaseX) { observe.x += observeMoveSensitive; }
-			if (decreaseX) { observe.x -= observeMoveSensitive; }
-			if (increaseY) { observe.y += observeMoveSensitive; }
-			if (decreaseY) { observe.y -= observeMoveSensitive; }
-			if (increaseZ) { observe.z += observeMoveSensitive; }
-			if (decreaseZ) { observe.z -= observeMoveSensitive; }
-		}
 		if (Vector3.Distance(renderCam.transform.position, observe) > smoothTolerance) {
 			renderCam.transform.position = Vector3.Lerp(renderCam.transform.position, observe, smoothSpeed * Time.deltaTime);
 		}
@@ -162,13 +121,10 @@ public class ModelController : MonoBehaviour
 		observe = convertFromServer(p);
 	}
 
-	public void switchObservationMode() {
-		if (useFaceTrack) {
-			useFaceTrack = false;
-			observe = defaultObserve;
-		} else {
-			useFaceTrack = true;
-		}
+	public void resetAll() {
+		pos = defaultPos;
+		observe = defaultObserve;
+		sender.GetComponent<ClientController>().ConnectToTcpServer(address);
 	}
 
 }

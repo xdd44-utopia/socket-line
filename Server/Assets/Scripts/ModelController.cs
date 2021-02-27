@@ -19,7 +19,8 @@ public class ModelController : MonoBehaviour
 	public bool decreaseY = false;
 	public bool increaseZ = false;
 	public bool decreaseZ = false;
-	private Vector3 pos = new Vector3(0, 0, 0);
+	private Vector3 pos = new Vector3(0, 0, 0.6f);
+	private Vector3 defaultPos = new Vector3(0, 0, 0.6f);
 	private Vector3 prevTouch;
 	private float moveSensitive = 0.01f;
 
@@ -146,6 +147,11 @@ public class ModelController : MonoBehaviour
 		} else {
 			useFaceTrack = true;
 		}
+	}
+
+	public void resetAll() {
+		pos = defaultPos;
+		observe = defaultObserve;
 	}
 
 }
