@@ -46,7 +46,7 @@
 			float _Alpha;
 			float _StepSize;
 
-			RWStructuredBuffer<float3> buffer : register(u1);
+			//RWStructuredBuffer<float3> buffer : register(u1);
 
 			v2f vert (appdata v)
 			{
@@ -65,7 +65,7 @@
 
 				o.clippingPos = mul(unity_ObjectToWorld, v.vertex).z;
 
-				buffer[0] = o.clippingPos;
+				//buffer[0] = o.clippingPos;
 
 				o.vertex = UnityObjectToClipPos(v.vertex);
 				return o;
