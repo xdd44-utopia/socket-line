@@ -67,7 +67,15 @@ Material:
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
+    - _OffSetX: 0
+    - _OffSetY: 0
+    - _OffSetZ: 0
+    - _OffsetX: 0
+    - _OffsetY: 0
+    - _OffsetZ: 0.69
     - _Parallax: 0.02
+    - _RotateY: 0
+    - _RotateZ: 0
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1

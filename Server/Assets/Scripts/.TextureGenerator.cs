@@ -13,7 +13,7 @@ public class TextureGenerator : MonoBehaviour
 	[MenuItem("CreateTexture/3DTexture")]
 	public static void CreateTexture3D()
 	{
-		string[] pixels = System.IO.File.ReadAllLines(@"/Users/xdd44/Documents/Creation/SCM/socket-line/textureConverter/bin/data/colors.txt");
+		string[] pixels = System.IO.File.ReadAllLines(@"/Users/xdd44/Documents/SCM/socket-line/textureConverter/bin/data/colors.txt");
 		Debug.Log("generating");
 		// Configure the texture
 		int size = 256;

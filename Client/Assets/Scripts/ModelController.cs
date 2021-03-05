@@ -7,8 +7,11 @@ public class ModelController : MonoBehaviour
 {
 	public GameObject sender;
 	public GameObject renderCam;
+	public Texture texture;
 
-	private string address = "10.150.153.190";
+	private MeshRenderer meshRenderer;
+
+	private string address = "192.168.0.106";
 	//Macbook local connecting to iPhone hotspot: 172.20.10.2
 	//Macbook local connecting to xdd44's wifi: 192.168.0.101
 	//iPhone connecting to iPhone hotspot: 10.150.153.190
@@ -16,26 +19,26 @@ public class ModelController : MonoBehaviour
 	private float camWidth;
 	private float camHeight;
 	private float angle = 2 * Mathf.PI / 3;
-
-	private Vector3 pos = new Vector3(0, 0, 0.6f);
-	private Vector3 defaultPos = new Vector3(0, 0, 0.6f);
+	
+	[HideInInspector]
+	public Vector3 pos = new Vector3(0, 0, 0f);
+	private Vector3 defaultPos = new Vector3(0, 0, 0.25f);
 	private Vector3 prevTouch;
-	private float moveSensitive = 0.01f;
+	private float moveSensitive = 0.001f;
 
 	private Vector3 observe = new Vector3(0, 0, -5f);
 	private Vector3 defaultObserve = new Vector3(0, 0, -5f);
-	private float correction = 2.5f;
-	private float smoothSpeed = 10f;
-	private float smoothTolerance = 1f;
-	private float observationScalePlaner = 50f;
-	private float observationScaleVertical = 100f;
-	private float observeMoveSensitive = 0.05f;
+	private float smoothSpeed = 25f;
+	private float smoothTolerance = 0.1f;
 	
 	void Start() {
 		Camera cam = Camera.main;
 		camHeight = 2f * cam.orthographicSize;
 		camWidth = camHeight * cam.aspect;
-		transform.rotation = Quaternion.Euler(0, 180 * angle / Mathf.PI - 180, 0);
+
+		meshRenderer = GetComponent<MeshRenderer>();
+		meshRenderer.material = new Material(Shader.Find("Custom/ClipShader"));
+		meshRenderer.material.SetTexture("_MainTex", texture);
 	}
 
 	void Update() {
@@ -84,11 +87,13 @@ public class ModelController : MonoBehaviour
 		else if (Input.GetMouseButton(0) && Input.mousePosition.y < 2500f && Input.mousePosition.y > 300f) {
 			Vector2 tp = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
 			pos += moveSensitive * (new Vector3(tp.x, tp.y, 0) - new Vector3(prevTouch.x, prevTouch.y, 0));
-			Debug.Log(convertToServer(new Vector3(tp.x, tp.y, 0)) + " " + convertToServer(new Vector3(prevTouch.x, prevTouch.y, 0)));
 			prevTouch = tp;
 			sender.GetComponent<ClientController>().sendMessage(convertToServer(pos));
 		}
-		transform.position = pos;
+		meshRenderer.material.SetFloat("_OffsetX", pos.x);
+		meshRenderer.material.SetFloat("_OffsetY", pos.y);
+		meshRenderer.material.SetFloat("_OffsetZ", pos.z);
+		meshRenderer.material.SetFloat("_RotateY", angle - Mathf.PI);
 	}
 
 	private Vector3 convertFromServer(Vector3 v) {
@@ -113,8 +118,6 @@ public class ModelController : MonoBehaviour
 
 	public void receivePos(Vector3 p) {
 		pos = convertFromServer(p);
-		// Debug.Log("receive opposite pos: " + p);
-		// Debug.Log("converted: " + pos);
 	}
 
 	public void receiveView(Vector3 p) {

@@ -8,7 +8,10 @@ public class ModelController : MonoBehaviour
 	public GameObject sender;
 	public GameObject renderCam;
 	public Text text;
+	public Texture texture;
 	private bool useFaceTrack = false;
+
+	private MeshRenderer meshRenderer;
 
 	private float camWidth;
 	private float camHeight;
@@ -19,24 +22,29 @@ public class ModelController : MonoBehaviour
 	public bool decreaseY = false;
 	public bool increaseZ = false;
 	public bool decreaseZ = false;
-	private Vector3 pos = new Vector3(0, 0, 0.6f);
-	private Vector3 defaultPos = new Vector3(0, 0, 0.6f);
+	[HideInInspector]
+	public Vector3 pos = new Vector3(0, 0, 0);
+	private Vector3 defaultPos = new Vector3(0, 0, 0.25f);
 	private Vector3 prevTouch;
-	private float moveSensitive = 0.01f;
+	private float moveSensitive = 0.001f;
 
 	private Vector3 observe = new Vector3(0, 0, -5f);
 	private Vector3 defaultObserve = new Vector3(0, 0, -5f);
 	private float correction = 2.5f;
-	private float smoothSpeed = 5f;
-	private float smoothTolerance = 1f;
+	private float smoothSpeed = 25f;
+	private float smoothTolerance = 0.1f;
 	private float observationScalePlaner = 50f;
-	private float observationScaleVertical = 100f;
+	private float observationScaleVertical = 50f;
 	private float observeMoveSensitive = 0.05f;
 	
 	void Start() {
 		Camera cam = Camera.main;
 		camHeight = 2f * cam.orthographicSize;
 		camWidth = camHeight * cam.aspect;
+
+		meshRenderer = GetComponent<MeshRenderer>();
+		meshRenderer.material = new Material(Shader.Find("Custom/ClipShader"));
+		meshRenderer.material.SetTexture("_MainTex", texture);
 	}
 
 	void Update() {
@@ -68,7 +76,7 @@ public class ModelController : MonoBehaviour
 				-objects[0].transform.rotation.eulerAngles.z
 			);
 			observe = new Vector3(
-				testObj.transform.position.x,
+				-testObj.transform.position.x,
 				testObj.transform.position.y,
 				-testObj.transform.position.z
 			);
@@ -131,13 +139,9 @@ public class ModelController : MonoBehaviour
 			prevTouch = tp;
 			sender.GetComponent<ServerController>().sendMessage();
 		}
-		transform.position = pos;
-	}
-
-	public void receivePos(Vector3 p) {
-		//posOpposite = new Vector3(2.5f - p.x / 2, p.y, Mathf.Sqrt(3f) * (p.x + 5f) / 2);
-		pos = p;
-		Debug.Log("receive opposite pos: " + p);
+		meshRenderer.material.SetFloat("_OffsetX", pos.x);
+		meshRenderer.material.SetFloat("_OffsetY", pos.y);
+		meshRenderer.material.SetFloat("_OffsetZ", pos.z);
 	}
 
 	public void switchObservationMode() {
@@ -151,6 +155,7 @@ public class ModelController : MonoBehaviour
 
 	public void resetAll() {
 		pos = defaultPos;
+		Debug.Log(pos.z);
 		observe = defaultObserve;
 	}
 

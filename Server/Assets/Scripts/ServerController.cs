@@ -45,7 +45,7 @@ public class ServerController : MonoBehaviour {
 			noConnection = false;
 		}
 		if (isRefreshed) {
-			obj.GetComponent<ModelController>().receivePos(pos);
+			obj.GetComponent<ModelController>().pos = pos;
 			isRefreshed = false;
 		}
 	}
@@ -85,7 +85,13 @@ public class ServerController : MonoBehaviour {
 		try {			
 			NetworkStream stream = connectedTcpClient.GetStream();
 			if (stream.CanWrite) {
-				string serverMessage = obj.transform.position.x + "," + obj.transform.position.y + "," + obj.transform.position.z + "," + renderCamera.transform.position.x + "," + renderCamera.transform.position.y + "," + renderCamera.transform.position.z + ",";
+				string serverMessage =
+					obj.GetComponent<ModelController>().pos.x + "," +
+					obj.GetComponent<ModelController>().pos.y + "," +
+					obj.GetComponent<ModelController>().pos.z + "," +
+					renderCamera.transform.position.x + "," +
+					renderCamera.transform.position.y + "," +
+					renderCamera.transform.position.z + ",";
 				byte[] serverMessageAsByteArray = Encoding.ASCII.GetBytes(serverMessage);
 				stream.Write(serverMessageAsByteArray, 0, serverMessageAsByteArray.Length);
 				Debug.Log("Server sent his message - should be received by client");

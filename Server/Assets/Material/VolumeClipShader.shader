@@ -4,6 +4,10 @@
 	{
 		_MainTex ("Texture", 3D) = "white" {}
 		_StepSize ("Step Size", float) = 0.01
+		_OffsetX ("OffsetX", float) = 0
+		_OffsetY ("OffsetY", float) = 0
+		_OffsetZ ("OffsetZ", float) = 0
+		_RotateY ("RotateY", float) = 0
 	}
 	SubShader
 	{
@@ -14,8 +18,8 @@
 		Pass
 		{
 			CGPROGRAM
-// Upgrade NOTE: excluded shader from DX11; has structs without semantics (struct v2f members clippingPos)
-#pragma exclude_renderers d3d11
+			// Upgrade NOTE: excluded shader from DX11; has structs without semantics (struct v2f members clippingPos)
+			#pragma exclude_renderers d3d11
 			#pragma vertex vert
 			#pragma fragment frag
 
@@ -45,27 +49,25 @@
 			float4 _MainTex_ST;
 			float _Alpha;
 			float _StepSize;
-
-			//RWStructuredBuffer<float3> buffer : register(u1);
+			float _OffsetX;
+			float _OffsetY;
+			float _OffsetZ;
+			float _RotateY;
 
 			v2f vert (appdata v)
 			{
 				v2f o;
 
-				// Vertex in object space this will be the starting point of raymarching
 				o.objectVertex = v.vertex;
 				o.objectVertex.x -= _WorldSpaceCameraPos.x;
 				o.objectVertex.z -= _WorldSpaceCameraPos.y;
 
-				// Calculate vector from camera to vertex in world space
 				o.worldVertex = mul(unity_ObjectToWorld, o.objectVertex).xyz;
 
 				float3 camPos = _WorldSpaceCameraPos;
 				o.vectorToSurface = o.worldVertex - camPos;
 
-				o.clippingPos = mul(unity_ObjectToWorld, v.vertex).z;
-
-				//buffer[0] = o.clippingPos;
+				o.clippingPos = mul(unity_ObjectToWorld, v.vertex).z - 0.5f;
 
 				o.vertex = UnityObjectToClipPos(v.vertex);
 				return o;
@@ -79,7 +81,16 @@
 			}
 
 			float3 TransformedPosition(float3 o) {
-				return float3(o.x, 1-o.z, -o.y);
+				float inputX = 0.5f + o.x;
+				float inputY = 0.5f - o.z;
+				float inputZ = - o.y;
+				inputX += -_OffsetX;
+				inputY += _OffsetY;
+				inputZ += -_OffsetZ;
+				float resultX = (inputX - 0.5f) * cos(_RotateY) - (inputZ - 0.5f) * sin(_RotateY) + 0.5f;
+				float resultY = inputY;
+				float resultZ = (inputX - 0.5f) * sin(_RotateY) + (inputZ - 0.5f) * cos(_RotateY) + 0.5f;
+				return float3(resultX, resultY, resultZ);
 			}
 
 			fixed4 frag(v2f i) : SV_Target
@@ -97,14 +108,10 @@
 				// Raymarch through object space
 				for (int i = 0; i < MAX_STEP_COUNT; i++)
 				{
-					// Accumulate color only within unit cube bounds
-					//if(max(abs(samplePosition.x), max(abs(samplePosition.y), abs(samplePosition.z))) < 0.5f + EPSILON)
-					//{
-						float4 sampledColor = tex3D(_MainTex, TransformedPosition( samplePosition + float3(0.5f, 0.5f, 0.5f)));
-						//sampledColor.a *= _Alpha;
-						color = BlendUnder(color, sampledColor);
-						samplePosition += rayDirection * _StepSize;
-					//}
+					float4 sampledColor = tex3D(_MainTex, TransformedPosition(samplePosition));
+					//sampledColor.a *= _Alpha;
+					color = BlendUnder(color, sampledColor);
+					samplePosition += rayDirection * _StepSize;
 				}
 
 				return color;
