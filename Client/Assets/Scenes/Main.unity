@@ -672,7 +672,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sender: {fileID: 1819280226625799064}
   renderCam: {fileID: 2886150795147533700}
-  texture: {fileID: 11700000, guid: 4d1f4a53010974c7f946c5f2b835d722, type: 2}
+  texture: {fileID: 11700000, guid: 8577cbbfe8258407088840279d3d8348, type: 2}
   pos: {x: 0, y: 0, z: 0}
 --- !u!23 &985435715427689842
 MeshRenderer:

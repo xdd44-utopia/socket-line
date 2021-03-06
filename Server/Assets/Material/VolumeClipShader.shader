@@ -93,25 +93,34 @@
 				return float3(resultX, resultY, resultZ);
 			}
 
-			fixed4 frag(v2f i) : SV_Target
+			fixed4 frag(v2f iv) : SV_Target
 			{
 				// Start raymarching at the front surface of the object
-				float3 rayOrigin = i.objectVertex;
+				float3 rayOrigin = iv.objectVertex;
 
 				// Use vector from camera to object surface to get ray direction
-				float3 rayDirection = mul(unity_WorldToObject, float4(normalize(i.vectorToSurface), 1));
+				float3 rayDirection = mul(unity_WorldToObject, float4(normalize(iv.vectorToSurface), 1));
 
 				float4 color = float4(0, 0, 0, 0);
 				float3 samplePosition = rayOrigin;
-				samplePosition.y += i.clippingPos;
+				samplePosition.y += iv.clippingPos;
 
 				// Raymarch through object space
 				for (int i = 0; i < MAX_STEP_COUNT; i++)
 				{
-					float4 sampledColor = tex3D(_MainTex, TransformedPosition(samplePosition));
-					//sampledColor.a *= _Alpha;
-					color = BlendUnder(color, sampledColor);
-					samplePosition += rayDirection * _StepSize;
+					float3 transformedPos = TransformedPosition(samplePosition);
+					if(max(abs(transformedPos.x), max(abs(transformedPos.y), abs(transformedPos.z))) < 1 + EPSILON) {
+						float4 sampledColor = tex3D(_MainTex, transformedPos);
+						if (sampledColor.r == sampledColor.g && sampledColor.g == sampledColor.b && sampledColor.a < 0.5f && sampledColor.a > 0.05f) {
+							sampledColor.a *= 1.2f + samplePosition.y - rayOrigin.y - iv.clippingPos;
+							sampledColor.a *= sampledColor.a;
+						}
+						color = BlendUnder(color, sampledColor);
+						if (color.a > 0.5f) {
+							break;
+						}
+						samplePosition += rayDirection * _StepSize;
+					}
 				}
 
 				return color;

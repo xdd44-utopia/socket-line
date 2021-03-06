@@ -2145,7 +2145,7 @@ MonoBehaviour:
   sender: {fileID: 892375413}
   renderCam: {fileID: 2886150795147533700}
   text: {fileID: 1278240725}
-  texture: {fileID: 11700000, guid: de8acfd4973824567a7a215072a7b7f5, type: 2}
+  texture: {fileID: 11700000, guid: 0a7a4a06dba0241fba5199b2e351325b, type: 2}
   increaseX: 0
   decreaseX: 0
   increaseY: 0

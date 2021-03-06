@@ -11,8 +11,9 @@ public class ModelController : MonoBehaviour
 
 	private MeshRenderer meshRenderer;
 
-	private string address = "192.168.0.106";
+	private string address = "172.20.10.6";
 	//Macbook local connecting to iPhone hotspot: 172.20.10.2
+	//Samsung connecting to iPhone hotspot: 172.20.10.6
 	//Macbook local connecting to xdd44's wifi: 192.168.0.101
 	//iPhone connecting to iPhone hotspot: 10.150.153.190
 

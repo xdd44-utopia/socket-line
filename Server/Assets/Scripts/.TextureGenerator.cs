@@ -3,12 +3,8 @@ using UnityEngine;
 
 public class TextureGenerator : MonoBehaviour
 {
-	private static Color voidColor = new Color(0.0862f, 0.5529f, 0.2039f, 0f);
-	private static Color earthColor = new Color(0.0862f, 0.5529f, 0.2039f, 1f);
-	private static Color crustColor = new Color(0.5647f, 0.4901f, 0.4196f, 1f);
-	private static Color mantleColor = new Color(0.9725f, 0.2509f, 0.0156f, 1f);
-	private static Color outercoreColor = new Color(0.9764f, 0.5215f, 0f, 1f);
-	private static Color innercoreColor = new Color(0.9607f, 0.7529f, 0.2862f, 1f);
+	private static int thickness = 3;
+	private static int interval = 40;
 
 	[MenuItem("CreateTexture/3DTexture")]
 	public static void CreateTexture3D()
@@ -40,6 +36,13 @@ public class TextureGenerator : MonoBehaviour
 				for (int x = 0; x < size; x++)
 				{
 					colors[x + yOffset + zOffset] = converter(pixels[x + yOffset + zOffset]);
+					if ((((x + interval / 2) % interval < thickness && (y + interval / 2) % interval < thickness) ||
+						((x + interval / 2) % interval < thickness && (z + interval / 2) % interval < thickness) ||
+						((y + interval / 2) % interval < thickness && (z + interval / 2) % interval < thickness)) &&
+						x > thickness && y > thickness && z > thickness
+						) {
+						colors[x + yOffset + zOffset] = new Color(0.9f, 0.9f, 0.9f, 0.49f);
+					}
 				}
 			}
 		}
@@ -51,7 +54,7 @@ public class TextureGenerator : MonoBehaviour
 		texture.Apply();        
 
 		// Save the texture to your Unity Project
-		AssetDatabase.CreateAsset(texture, "Assets/Material/Head.asset");
+		AssetDatabase.CreateAsset(texture, "Assets/Material/HeadGrid.asset");
 	}
 
 	static Color converter(string str) {
