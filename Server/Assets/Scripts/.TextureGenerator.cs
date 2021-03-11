@@ -39,7 +39,7 @@ public class TextureGenerator : MonoBehaviour
 					if ((((x + interval / 2) % interval < thickness && (y + interval / 2) % interval < thickness) ||
 						((x + interval / 2) % interval < thickness && (z + interval / 2) % interval < thickness) ||
 						((y + interval / 2) % interval < thickness && (z + interval / 2) % interval < thickness)) &&
-						x > thickness && y > thickness && z > thickness
+						x > thickness && y > thickness && z > thickness && x < size - thickness && y < size - thickness && z < size - thickness
 						) {
 						colors[x + yOffset + zOffset] = new Color(0.9f, 0.9f, 0.9f, 0.49f);
 					}

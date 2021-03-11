@@ -109,18 +109,18 @@
 				for (int i = 0; i < MAX_STEP_COUNT; i++)
 				{
 					float3 transformedPos = TransformedPosition(samplePosition);
-					if(max(abs(transformedPos.x), max(abs(transformedPos.y), abs(transformedPos.z))) < 1 + EPSILON) {
+					//if(max(abs(transformedPos.x), max(abs(transformedPos.y), abs(transformedPos.z))) < 2 + EPSILON) {
 						float4 sampledColor = tex3D(_MainTex, transformedPos);
-						if (sampledColor.r == sampledColor.g && sampledColor.g == sampledColor.b && sampledColor.a < 0.5f && sampledColor.a > 0.05f) {
-							sampledColor.a *= 1.2f + samplePosition.y - rayOrigin.y - iv.clippingPos;
-							sampledColor.a *= sampledColor.a;
-						}
+						// if (sampledColor.r == sampledColor.g && sampledColor.g == sampledColor.b && sampledColor.a < 0.5f && sampledColor.a > 0.05f) {
+						// 	sampledColor.a *= 1.2f + samplePosition.y - rayOrigin.y - iv.clippingPos;
+						// 	sampledColor.a *= sampledColor.a;
+						// }
 						color = BlendUnder(color, sampledColor);
-						if (color.a > 0.5f) {
-							break;
-						}
+						// if (color.a > 0.5f) {
+						// 	break;
+						// }
 						samplePosition += rayDirection * _StepSize;
-					}
+					//}
 				}
 
 				return color;

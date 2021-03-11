@@ -13,14 +13,16 @@ public class ServerController : MonoBehaviour {
 
 	public Text ipText;
 	public Text rcvText;
-	public GameObject obj;
+	public GameObject touchProcessor;
+	public GameObject frame;
+	public GameObject faceTracker;
 	public Camera renderCamera;
 
 	private Color disconnectColor = new Color(0.8156f, 0.3529f, 0.4313f);
-	//private Color connectColor = new Color(0.5254f, 0.7568f, 0.4f);
 	private Color connectColor = new Color(0f, 0f, 0f);
 
 	private Vector3 pos = new Vector3(0, 0, 0);
+	private float angle = Mathf.PI / 2;
 	private bool isRefreshed = false;
 
 	private TcpListener tcpListener;
@@ -45,12 +47,13 @@ public class ServerController : MonoBehaviour {
 			noConnection = false;
 		}
 		if (isRefreshed) {
-			obj.GetComponent<ModelController>().pos = pos;
+			touchProcessor.GetComponent<TouchProcessor>().pos = pos;
+			frame.GetComponent<FrameController>().angle = angle;
 			isRefreshed = false;
 		}
 	}
 	
-	private void ListenForIncommingRequests () {
+	private void ListenForIncommingRequests() {
 		try {
 			tcpListener = new TcpListener(IPAddress.Any, 8052);
 			tcpListener.Start();
@@ -65,8 +68,7 @@ public class ServerController : MonoBehaviour {
 							Array.Copy(bytes, 0, incommingData, 0, length);
 							string clientMessage = Encoding.ASCII.GetString(incommingData);
 							rcvMsg = clientMessage;
-							pos = getVector(clientMessage);
-							isRefreshed = true;
+							getInfo(clientMessage);
 						}
 					}
 				}
@@ -86,12 +88,12 @@ public class ServerController : MonoBehaviour {
 			NetworkStream stream = connectedTcpClient.GetStream();
 			if (stream.CanWrite) {
 				string serverMessage =
-					obj.GetComponent<ModelController>().pos.x + "," +
-					obj.GetComponent<ModelController>().pos.y + "," +
-					obj.GetComponent<ModelController>().pos.z + "," +
-					renderCamera.transform.position.x + "," +
-					renderCamera.transform.position.y + "," +
-					renderCamera.transform.position.z + ",";
+					touchProcessor.GetComponent<TouchProcessor>().pos.x + "," +
+					touchProcessor.GetComponent<TouchProcessor>().pos.y + "," +
+					touchProcessor.GetComponent<TouchProcessor>().pos.z + "," +
+					faceTracker.GetComponent<FaceTracker>().currentObserve.x + "," +
+					faceTracker.GetComponent<FaceTracker>().currentObserve.y + "," +
+					faceTracker.GetComponent<FaceTracker>().currentObserve.z + ",";
 				byte[] serverMessageAsByteArray = Encoding.ASCII.GetBytes(serverMessage);
 				stream.Write(serverMessageAsByteArray, 0, serverMessageAsByteArray.Length);
 				Debug.Log("Server sent his message - should be received by client");
@@ -114,13 +116,14 @@ public class ServerController : MonoBehaviour {
 		throw new System.Exception("No network adapters with an IPv4 address in the system!");
 	}
 
-	private Vector3 getVector(string str) {
+	private void getInfo(string str) {
 		string[] temp = str.Split(',');
 		float x = System.Convert.ToSingle(temp[0]);
 		float y = System.Convert.ToSingle(temp[1]);
 		float z = System.Convert.ToSingle(temp[2]);
-		Vector3 v = new Vector3(x, y, z);
-		return v;
+		pos = new Vector3(x, y, z);
+		angle = System.Convert.ToSingle(temp[3]);
+		isRefreshed = true;
 	}
 
 }

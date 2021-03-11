@@ -17,23 +17,23 @@ public class ButtonController : MonoBehaviour, IPointerDownHandler, IPointerUpHa
 	}
 	public void OnPointerDown(PointerEventData eventData){
 		switch (buttonNum) {
-			case 0: obj.GetComponent<ModelController>().increaseX = true; break;
-			case 1: obj.GetComponent<ModelController>().decreaseX = true; break;
-			case 2: obj.GetComponent<ModelController>().increaseY = true; break;
-			case 3: obj.GetComponent<ModelController>().decreaseY = true; break;
-			case 4: obj.GetComponent<ModelController>().increaseZ = true; break;
-			case 5: obj.GetComponent<ModelController>().decreaseZ = true; break;
+			case 0: obj.GetComponent<FaceTracker>().increaseX = true; break;
+			case 1: obj.GetComponent<FaceTracker>().decreaseX = true; break;
+			case 2: obj.GetComponent<FaceTracker>().increaseY = true; break;
+			case 3: obj.GetComponent<FaceTracker>().decreaseY = true; break;
+			case 4: obj.GetComponent<FaceTracker>().increaseZ = true; break;
+			case 5: obj.GetComponent<FaceTracker>().decreaseZ = true; break;
 		}
 	}
 	
 	public void OnPointerUp(PointerEventData eventData){
 		switch (buttonNum) {
-			case 0: obj.GetComponent<ModelController>().increaseX = false; break;
-			case 1: obj.GetComponent<ModelController>().decreaseX = false; break;
-			case 2: obj.GetComponent<ModelController>().increaseY = false; break;
-			case 3: obj.GetComponent<ModelController>().decreaseY = false; break;
-			case 4: obj.GetComponent<ModelController>().increaseZ = false; break;
-			case 5: obj.GetComponent<ModelController>().decreaseZ = false; break;
+			case 0: obj.GetComponent<FaceTracker>().increaseX = false; break;
+			case 1: obj.GetComponent<FaceTracker>().decreaseX = false; break;
+			case 2: obj.GetComponent<FaceTracker>().increaseY = false; break;
+			case 3: obj.GetComponent<FaceTracker>().decreaseY = false; break;
+			case 4: obj.GetComponent<FaceTracker>().increaseZ = false; break;
+			case 5: obj.GetComponent<FaceTracker>().decreaseZ = false; break;
 		}
 	}
 }

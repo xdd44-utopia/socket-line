@@ -11,13 +11,6 @@ public class TouchController : MonoBehaviour
 	public Text text;
 	private bool useFaceTrack = false;
 
-	private bool increaseX = false;
-	private bool decreaseX = false;
-	private bool increaseY = false;
-	private bool decreaseY = false;
-	private bool increaseZ = false;
-	private bool decreaseZ = false;
-
 	private Vector3 posOpposite = new Vector3(0, 0, 0);
 	private Vector3 posSelf = new Vector3(0, 0, 0);
 	private float delayTimer = 0;
@@ -56,44 +49,7 @@ public class TouchController : MonoBehaviour
 	}
 
 	void updateObservation() {
-		if (useFaceTrack) {
-			GameObject[] objects = GameObject.FindGameObjectsWithTag("Player");
-			GameObject testObj = new GameObject();
-			Instantiate(testObj, objects[0].transform.position, Quaternion.identity);
-			testObj.transform.position = objects[0].transform.position;
-			objects = GameObject.FindGameObjectsWithTag("FacePosition");
-			testObj.transform.RotateAround(
-				new Vector3(0f, 0f, 0f),
-				new Vector3(0f, 1f, 0f),
-				-objects[0].transform.rotation.eulerAngles.y
-			);
-			testObj.transform.RotateAround(
-				new Vector3(0f, 0f, 0f),
-				new Vector3(1f, 0f, 0f),
-				-objects[0].transform.rotation.eulerAngles.x
-			);
-			testObj.transform.RotateAround(
-				new Vector3(0f, 0f, 0f),
-				new Vector3(0f, 0f, 1f),
-				-objects[0].transform.rotation.eulerAngles.z
-			);
-			observe = new Vector3(
-				testObj.transform.position.x,
-				testObj.transform.position.y,
-				-testObj.transform.position.z
-			) * observationScale;
-			text.text = "Face pos: " + observe;
-			Destroy(testObj, 0f);
-		}
-		else {
-			if (increaseX) { observe.x += observeMoveSensitive; }
-			if (decreaseX) { observe.x -= observeMoveSensitive; }
-			if (increaseY) { observe.y += observeMoveSensitive; }
-			if (decreaseY) { observe.y -= observeMoveSensitive; }
-			if (increaseZ) { observe.z += observeMoveSensitive; }
-			if (decreaseZ) { observe.z -= observeMoveSensitive; }
-			text.text = "Manual mode";
-		}
+		
 	}
 
 	void updatePoint() {
@@ -151,26 +107,6 @@ public class TouchController : MonoBehaviour
 		Debug.Log("receive opposite pos: " + p);
 
 	}
-
-	private void observeXIncrease() { observe.x += observeMoveSensitive; }
-	private void observeXDecrease() { observe.x -= observeMoveSensitive; }
-	private void observeYIncrease() { observe.y += observeMoveSensitive; }
-	private void observeYDecrease() { observe.y -= observeMoveSensitive; }
-	private void observeZIncrease() { observe.z += observeMoveSensitive; }
-	private void observeZDecrease() { observe.z -= observeMoveSensitive; }
-
-	public void startIncreaseX() { increaseX = true; }
-	public void stopIncreaseX() { increaseX = false; }
-	public void startDecreaseX() { decreaseX = true; }
-	public void stopDecreaseX() { decreaseX = false; }
-	public void startIncreaseY() { increaseY = true; }
-	public void stopIncreaseY() { increaseY = false; }
-	public void startDecreaseY() { decreaseY = true; }
-	public void stopDecreaseY() { decreaseY = false; }
-	public void startIncreaseZ() { increaseZ = true; }
-	public void stopIncreaseZ() { increaseZ = false; }
-	public void startDecreaseZ() { decreaseZ = true; }
-	public void stopDecreaseZ() { decreaseZ = false; }
 
 	public void switchObservationMode() {
 		if (useFaceTrack) {
