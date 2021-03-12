@@ -89,7 +89,7 @@ public class ClientController : MonoBehaviour {
 					posToSend.x + "," +
 					posToSend.y + "," +
 					posToSend.z + "," +
-					obj.GetComponent<ModelController>().angle + ",";
+					touchProcessor.GetComponent<TouchProcessor>().angle + ",";
 				byte[] clientMessageAsByteArray = Encoding.ASCII.GetBytes(clientMessage);
 				stream.Write(clientMessageAsByteArray, 0, clientMessageAsByteArray.Length);
 				Debug.Log("Client sent his message - should be received by server");
@@ -115,7 +115,7 @@ public class ClientController : MonoBehaviour {
 	}
 
 	private Vector3 convertFromServer(Vector3 v) {
-		float angle = obj.GetComponent<ModelController>().angle;
+		float angle = touchProcessor.GetComponent<TouchProcessor>().angle;
 		Vector3 origin = new Vector3(camWidth / 2 + camWidth * Mathf.Cos(Mathf.PI - angle) / 2, 0, - camWidth * Mathf.Sin(Mathf.PI - angle) / 2);
 		Vector3 x = new Vector3(Mathf.Cos(Mathf.PI - angle), 0, - Mathf.Sin(Mathf.PI - angle));
 		Vector3 z = new Vector3(Mathf.Cos(angle - Mathf.PI / 2), 0, Mathf.Sin(angle - Mathf.PI / 2));
@@ -124,7 +124,7 @@ public class ClientController : MonoBehaviour {
 	}
 
 	private Vector3 convertToServer(Vector3 v) {
-		float angle = obj.GetComponent<ModelController>().angle;
+		float angle = touchProcessor.GetComponent<TouchProcessor>().angle;
 		Vector3 origin = new Vector3(- camWidth / 2 - camWidth * Mathf.Cos(Mathf.PI - angle) / 2, 0, - camWidth * Mathf.Sin(Mathf.PI - angle) / 2);
 		Vector3 x = new Vector3(Mathf.Cos(Mathf.PI - angle), 0, Mathf.Sin(Mathf.PI - angle));
 		Vector3 z = new Vector3(-Mathf.Cos(angle - Mathf.PI / 2), 0, Mathf.Sin(angle - Mathf.PI / 2));

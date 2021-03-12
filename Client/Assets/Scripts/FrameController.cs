@@ -5,14 +5,14 @@ using UnityEngine;
 public class FrameController : MonoBehaviour
 {
 	public GameObject obj;
+	public GameObject touchProcessor;
 	private float lineWidth = 0.025f;
 
 
 	private float camWidth;
 	private float camHeight;
 
-	[HideInInspector]
-	public float angle;
+	private float angle;
 	private LineRenderer lineRenderer;
 	private Vector3 observe;
 	// Start is called before the first frame update
@@ -36,6 +36,7 @@ public class FrameController : MonoBehaviour
 		camHeight = cam.orthographicSize;
 		camWidth = camHeight * cam.aspect;
 		observe = obj.GetComponent<ModelController>().observe;
+		angle = touchProcessor.GetComponent<TouchProcessor>().angle;
 
 		transform.localPosition = new Vector3(0, 0, -observe.z);
 

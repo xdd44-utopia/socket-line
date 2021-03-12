@@ -11,9 +11,7 @@ public class ModelController : MonoBehaviour
 
 	private MeshRenderer meshRenderer;
 
-	[HideInInspector]
-	public float angle;
-	
+	private float angle;
 	private Vector3 pos = new Vector3(0, 0, 0f);
 
 	[HideInInspector]
@@ -31,6 +29,7 @@ public class ModelController : MonoBehaviour
 	void Update() {
 		renderCam.transform.position = observe;
 		pos = touchProcessor.GetComponent<TouchProcessor>().pos;
+		angle = touchProcessor.GetComponent<TouchProcessor>().angle;
 		meshRenderer.material.SetFloat("_OffsetX", pos.x);
 		meshRenderer.material.SetFloat("_OffsetY", pos.y);
 		meshRenderer.material.SetFloat("_OffsetZ", pos.z);
